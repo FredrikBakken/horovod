@@ -34,7 +34,7 @@ Docker container with Horovod instead of building it by yourself.
 .. code-block:: bash
 
     $ nvidia-docker run -it horovod:latest
-    root@c278c88dd552:/examples# horovodrun -np 4 -H localhost:4 python keras_mnist_advanced.py
+    root@c278c88dd552:/examples# horovodrun -np 4 -H localhost:4 python keras/keras_mnist_advanced.py
 
 
 If you don't run your container in privileged mode, you may see the following message:
@@ -62,7 +62,7 @@ Primary worker:
 .. code-block:: bash
 
     host1$ nvidia-docker run -it --network=host -v /mnt/share/ssh:/root/.ssh horovod:latest
-    root@c278c88dd552:/examples# horovodrun -np 16 -H host1:4,host2:4,host3:4,host4:4 -p 12345 python keras_mnist_advanced.py
+    root@c278c88dd552:/examples# horovodrun -np 16 -H host1:4,host2:4,host3:4,host4:4 -p 12345 python keras/keras_mnist_advanced.py
 
 
 Secondary workers:
@@ -119,6 +119,6 @@ To run in situations without a common SSH port (e.g., multiple containers on the
    
    .. code-block:: bash
 
-        $ horovodrun -np 8 -H host1:4,host2:4 python keras_mnist_advanced.py
+        $ horovodrun -np 8 -H host1:4,host2:4 python keras/keras_mnist_advanced.py
 
 .. inclusion-marker-end-do-not-remove

@@ -1,3 +1,5 @@
+import argparse
+
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -8,14 +10,22 @@ import math
 import tensorflow as tf
 import horovod.keras as hvd
 
+# Training settings
+parser = argparse.ArgumentParser(description='Keras MNIST Example')
+parser.add_argument('--cpu', default=False, action='store_true',
+                    help='assign training to cpu')
+
+args = parser.parse_args()
+
 # Horovod: initialize Horovod.
 hvd.init()
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
+if not args.cpu:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())
+    K.set_session(tf.Session(config=config))
 
 batch_size = 128
 num_classes = 10

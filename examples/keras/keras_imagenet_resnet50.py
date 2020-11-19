@@ -31,6 +31,8 @@ parser.add_argument('--checkpoint-format', default='./checkpoint-{epoch}.h5',
                     help='checkpoint file format')
 parser.add_argument('--fp16-allreduce', action='store_true', default=False,
                     help='use fp16 compression during allreduce')
+parser.add_argument('--cpu', default=False, action='store_true',
+                    help='assign training to cpu')
 
 # Default settings from https://arxiv.org/abs/1706.02677.
 parser.add_argument('--batch-size', type=int, default=32,
@@ -54,10 +56,11 @@ args = parser.parse_args()
 hvd.init()
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
+if not args.cpu:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())
+    K.set_session(tf.Session(config=config))
 
 # If set > 0, will resume training from a given checkpoint.
 resume_from_epoch = 0

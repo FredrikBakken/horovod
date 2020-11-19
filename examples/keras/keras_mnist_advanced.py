@@ -11,13 +11,15 @@ import tensorflow as tf
 import horovod.keras as hvd
 
 # Training settings
-parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
+parser = argparse.ArgumentParser(description='Keras MNIST Advanced Example')
 parser.add_argument('--batch-size', type=int, default=128, metavar='N',
                     help='input batch size for training (default: 128)')
 parser.add_argument('--epochs', type=int, default=24, metavar='N',
                     help='number of epochs to train (default: 24)')
 parser.add_argument('--lr', type=float, default=1.0, metavar='LR',
                     help='learning rate (default: 1.0)')
+parser.add_argument('--cpu', default=False, action='store_true',
+                    help='assign training to cpu')
 
 args = parser.parse_args()
 
@@ -25,10 +27,11 @@ args = parser.parse_args()
 hvd.init()
 
 # Horovod: pin GPU to be used to process local rank (one GPU per process)
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
-K.set_session(tf.Session(config=config))
+if not args.cpu:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())
+    K.set_session(tf.Session(config=config))
 
 batch_size = args.batch_size
 num_classes = 10
